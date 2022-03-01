@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+    <head>
+        <meta charset="UTF-8">
+        <title>目科昆虫展示</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!-- 使用移动端 -->
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+        <!-- 加载网络图片 -->
+        <meta name="referrer" content="no-referrer">
+
+        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+        <link rel="stylesheet" href="/static/css/font.css">
+        <link rel="stylesheet" href="/static/css/xadmin.css">
+        <script src="/static/lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="/static/js/xadmin.js"></script>
+       <script type="text/javascript" src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=XMvUnX4k9m62hGvcvzBkCkwN8WeOrhs4"></script>
+
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]>
+          <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+          <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+<body>
+<input type="hidden" id="mu" value="{{name}}">
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body ">
+                        <blockquote id="title" class="layui-elem-quote" style="text-align: center;font-size: 25px">
+
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">有害昆虫统计</div>
+                    <div class="layui-card-body ">
+                        <ul id="showmu" class="layui-row layui-col-space10 layui-this x-admin-carousel x-admin-backlog">
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+
+
+    function show_insect(name) {
+        parent.xadmin.add_tab('昆虫详情','/insect_sub/'+name,true);
+    }
+
+    layui.use(['form', 'layer','element'], function() {
+        $ = layui.jquery;
+        var element = layui.element;
+        var form = layui.form,
+            layer = layui.layer;
+        mu=$("#mu").val();
+        $("#title").html(mu+"昆虫详情");
+
+        $.ajax({
+            url: '/get_insect_bymu',
+            type: "POST",
+            data:{"mu":mu},
+            dataType: "JSON",
+            async: false,
+            cache: false,
+            success:function (data) {
+                
+                var text="";
+                for(var i=0;i<data.length;i++)
+                {
+                    text+=" <li class='layui-col-md2 layui-col-xs6'>" +
+                        "                                <a onclick=\"show_insect('" + data[i].name+ "')\" class='x-admin-backlog-body'>" +
+                        "                                    <h3>"+data[i].name+"</h3>" +
+                        "                                    <p style=\"inline-size: auto\">" +
+                        "                                        <img style=\"width: 150px;height: 150px\" src="+data[i].pic+">" +
+                        "                                    </p>" +
+                        "                                </a>" +
+                        "                            </li>"
+                }
+                $("#showmu").html(text);
+            },
+            error:function(){
+                alert("出现错误");
+            }
+        });
+
+
+
+    });
+
+</script>
+</body>
+</html>

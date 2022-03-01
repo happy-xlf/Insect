@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>病虫害数据可视化</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+{#        <link rel="stylesheet" href="/static/css/index2.css">#}
+    <link rel="stylesheet" href="/static/fonts/icomoon.css">
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/echarts.min.js"></script>
+<style>
+    .login-button { /* 按钮美化 */
+	width: 100px; /* 宽度 */
+	height: 40px; /* 高度 */
+    margin-top: 23px;
+	border-width: 0px; /* 边框宽度 */
+	border-radius: 3px; /* 边框半径 */
+	background: #1E90FF; /* 背景颜色 */
+	cursor: pointer; /* 鼠标移入按钮范围时出现手势 */
+	outline: none; /* 不显示轮廓线 */
+	font-family: Microsoft YaHei; /* 设置字体 */
+	color: white; /* 字体颜色 */
+	font-size: 17px; /* 字体大小 */
+}
+.login-button:hover { /* 鼠标移入按钮范围时改变颜色 */
+	background: #5599FF;
+}
+</style>
+</head>
+
+<body>
+    <div class="viewport">
+        <div class="column">
+            <!--概览-->
+            <div class="overview panel">
+                <div class="inner">
+                    <div class="item">
+                        <h4 id="insect_sum">2,190</h4>
+                        <span>
+                            <i class="icon-dot" style="color: #006cff"></i>
+                            昆虫总数
+                        </span>
+                    </div>
+                    <div class="item">
+                        <h4 id="bcm_sum">1234</h4>
+                        <span>
+                            <i class="icon-dot" style="color: #6acca3"></i>
+                            半翅目总数
+                        </span>
+                    </div>
+                    <div class="item">
+                        <h4 id="lcm_sum">3,001</h4>
+                        <span>
+                            <i class="icon-dot" style="color: #6acca3"></i>
+                            鳞翅目总数
+                        </span>
+                    </div>
+                    <div class="item">
+                        <h4 id="qcm_sum">108</h4>
+                        <span>
+                            <i class="icon-dot" style="color: #ed3f35"></i>
+                            鞘翅目总数
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <!--监控-->
+            <div class="monitor panel">
+                <div class="inner">
+                    <div class="tabs">
+                        <a href="javascript:;" data-index="0" class="active">病虫害预警监控</a>
+                    </div>
+                    <div class="content" style="display: block;">
+                        <div class="head">
+                            <span class="col">监测时间</span>
+                            <span class="col">虫害地址</span>
+                            <span class="col">虫害名称</span>
+                            <span class="col">异常个数</span>
+                        </div>
+                        <div class="marquee-view">
+                            <div class="marquee">
+                                <div class="row" style="color: red">
+                                    <span class="col">20210510</span>
+                                    <span class="col">河北省石家庄市</span>
+                                    <span class="col">草履蚧</span>
+                                    <span class="col">58</span>
+                                </div>
+                                <div class="row" style="color: red">
+                                    <span class="col">20210528</span>
+                                    <span class="col">河北省邯郸市</span>
+                                     <span class="col">黄刺蛾</span>
+                                    <span class="col">98</span>
+                                </div>
+                                <div class="row" style="color: red">
+                                    <span class="col">20210601</span>
+                                    <span class="col">河北省衡水市</span>
+                                     <span class="col">丝带凤蝶</span>
+                                    <span class="col">132</span>
+                                </div><div class="row" style="color: red">
+                                    <span class="col">20210605</span>
+                                    <span class="col">河北省秦皇岛市</span>
+                                     <span class="col">杨扇舟蛾</span>
+                                    <span class="col">150</span>
+                                </div>
+                                <div class="row" style="color: red">
+                                    <span class="col">20210610</span>
+                                    <span class="col">河北省保定市</span>
+                                     <span class="col">桑天牛</span>
+                                    <span class="col">158</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--点位-->
+            <div class="point panel">
+                <div class="inner">
+                    <h3>病虫害分布统计</h3>
+                    <div class="chart">
+                        <div class="pie"></div>
+                        <div class="data">
+                            <div class="item">
+                                <h4 id="insect_sum2"></h4>
+                                <span>
+                                    <i class="icon-dot" style="color: #ed3f35"></i>
+                                    虫害总数
+                                </span>
+                            </div>
+                            <div class="item">
+                                <h4 id="month_num">418</h4>
+                                <span>
+                                    <i class="icon-dot" style="color: #eacf19"></i>
+                                    本月新增
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <!-- 地图 -->
+            <div class="map">
+                <h3>
+                    <span class="icon-cube"></span>
+                    病虫害迁移数据统计
+                </h3>
+                <div class="chart">
+                    <div class="geo"></div>
+                </div>
+            </div>
+            <!-- 用户 -->
+            <div class="users panel">
+                <div class="inner">
+                    <h3>全国省份病虫害种类统计</h3>
+                    <div class="chart">
+                        <div class="bar"></div>
+                        <div class="data">
+                            <div class="item">
+                                <h4>120,899</h4>
+                                <span>
+                                    <i class="icon-dot" style="color: #ed3f35"></i>
+                                    用户总量
+                                </span>
+                            </div>
+                            <div class="item">
+                                <h4>248</h4>
+                                <span>
+                                    <i class="icon-dot" style="color: #eacf19"></i>
+                                    本月新增
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <!-- 上传量 -->
+            <div class="order panel" >
+                    <div style="float:left;width: 33%;height: 100%;">
+                        <div>
+                            <h6><span style="color: #bad0e2;">待审核昆虫数</span></h6>
+                            <span style="margin-top: 15px;display: inline-block;color: #2aa4f1;">
+                                <b style="font-size: 30px;letter-spacing:5px;">175</b>个
+                            </span>
+                            <br>
+                            <img src="/static/images/pictre.png" alt="" style="width: 60%">
+                        </div>
+                    </div>
+                    <div style="float:left;width: 33%;height: 100%;">
+                        <div>
+                            <h6><span style="color: #bad0e2;">已审核数量</span></h6>
+                            <span style="margin-top: 15px;display: inline-block;color: #2aa4f1;">
+                                <b style="font-size: 30px;letter-spacing:5px;">20</b>个
+                            </span>
+                            <br>
+                            <img src="/static/images/pictre.png" alt="" style="width: 60%">
+                        </div>
+                    </div>
+                    <div style="float:left;width: 33%;height: 100%;">
+                        <button class="login-button" onclick="gotoHome()">进入后台</button>
+                    </div>
+            </div>
+            <!-- 销售额 -->
+            <div class="sales panel">
+                <div class="inner">
+                    <div class="caption">
+                        <h3>病虫害统计</h3>
+                        <a href="javascript:;" class="active" data-type="year">年</a>
+                        <a href="javascript:;" data-type="quarter">季</a>
+                        <a href="javascript:;" data-type="month">月</a>
+                        <a href="javascript:;" data-type="week">周</a>
+                    </div>
+                    <div class="chart">
+                        <div class="label">单位:万</div>
+                        <div class="line"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- 渠道 季度 -->
+            <div class="wrap">
+                <div class="channel panel">
+                    <div class="inner">
+                        <h3>渠道分布</h3>
+                        <div class="data">
+                            <div class="item">
+                                <h4>39 <small>%</small></h4>
+                                <span>
+                                    <i class="icon-plane"></i>
+                                    机场
+                                </span>
+                            </div>
+                            <div class="item">
+                                <h4>28 <small>%</small></h4>
+                                <span>
+                                    <i class="icon-bag"></i>
+                                    商场
+                                </span>
+                            </div>
+                        </div>
+                        <div class="data">
+                            <div class="item">
+                                <h4>20 <small>%</small></h4>
+                                <span>
+                                    <i class="icon-train"></i>
+                                    地铁
+                                </span>
+                            </div>
+                            <div class="item">
+                                <h4>13 <small>%</small></h4>
+                                <span>
+                                    <i class="icon-bus"></i>
+                                    火车站
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="quarter panel">
+                    <div class="inner">
+                        <h3>一季度害虫对比进度</h3>
+                        <div class="chart">
+                            <div class="box">
+                                <div class="gauge"></div>
+                                <div class="label">15<small> %</small></div>
+                            </div>
+                            <div class="data">
+                                <div class="item">
+                                    <h4>1,321</h4>
+                                    <span>
+                                        <i class="icon-dot" style="color: #6acca3"></i>
+                                        总数
+                                    </span>
+                                </div>
+                                <div class="item">
+                                    <h4>150%</h4>
+                                    <span>
+                                        <i class="icon-dot" style="color: #ed3f35"></i>
+                                        同比增长
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 排行榜 -->
+            <div class="top panel">
+                <div class="inner">
+                    <div class="all">
+                        <h3>全国热榜</h3>
+                        <ul>
+                            <li>
+                                <i class="icon-cup1" style="color: #d93f36;"></i>
+                                麻皮蝽
+                            </li>
+                            <li>
+                                <i class="icon-cup2" style="color: #68d8fe;"></i>
+                                杨扇舟蛾
+                            </li>
+                            <li>
+                                <i class="icon-cup3" style="color: #4c9bfd;"></i>
+                                草履蚧
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="province">
+                        <h3>各省热门 <i class="date">// 近30日 //</i></h3>
+                        <div class="data">
+                            <ul class="sup">
+                                <li>
+                                    <span>北京</span>
+                                    <span>25,179 <s class="icon-up"></s></span>
+                                </li>
+                                <li>
+                                    <span>河北</span>
+                                    <span>23,252 <s class="icon-down"></s></span>
+                                </li>
+                                <li>
+                                    <span>上海</span>
+                                    <span>20,760 <s class="icon-up"></s></span>
+                                </li>
+                                <li>
+                                    <span>江苏</span>
+                                    <span>23,252 <s class="icon-down"></s></span>
+                                </li>
+                                <li>
+                                    <span>山东</span>
+                                    <span>20,760 <s class="icon-up"></s></span>
+                                </li>
+                            </ul>
+                            <ul class="sub">
+                                <!-- <li><span>数据</span><span> 数据<s class="icon-up"></s></span></li> -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+
+    function gotoHome() {
+
+        location.href='/home'
+
+    }
+
+
+    (function () {
+        $.post(
+            "/getkindsum",
+            function(data){
+                var sum=data['sum'];
+                var bcm=data['bcm'];
+                var lcm=data['lcm'];
+                var qcm=data['qcm'];
+                //月份新增昆虫种类
+                var month_num=data['month_num'];
+                $("#insect_sum").html(sum);
+                $("#insect_sum2").html(sum);
+                $("#month_num").html(month_num);
+                $("#bcm_sum").html(bcm);
+                $("#lcm_sum").html(lcm);
+                $("#qcm_sum").html(qcm);
+            },
+            "json"
+        );
+
+
+
+
+    })();
+
+    var myecharts = null;
+    var geoCoordMap = {
+  "东台": [
+    120.67086,
+    32.765772
+  ],
+  "东海": [
+    118.77406,
+    34.528021
+  ],
+  "丰县": [
+    116.595391,
+    34.693906
+  ],
+  "丰泾村": [
+    120.557053,
+    31.500551
+  ],
+  "云龙区": [
+    117.25156,
+    34.253167
+  ],
+  "仪征市": [
+    119.184766,
+    32.272258
+  ],
+  "六合区": [
+    118.821401,
+    32.322247
+  ],
+  "吴中区": [
+    120.631898,
+    31.264212
+  ],
+  "吴江": [
+    120.640272,
+    30.976323
+  ],
+  "大丰": [
+    120.686455,
+    33.241831
+  ],
+  "太仓": [
+    121.125358,
+    31.441361
+  ],
+  "宜兴": [
+    119.804423,
+    31.362399
+  ],
+  "宝应县": [
+    119.360729,
+    33.240392
+  ],
+  "宿城区": [
+    118.242534,
+    33.963029
+  ],
+  "宿豫区": [
+    118.330782,
+    33.946822
+  ],
+  "宿迁沭阳": [
+    118.275198,
+    33.963232
+  ],
+  "宿迁泗阳": [
+    118.275198,
+    33.963232
+  ],
+  "常州市": [
+    119.973987,
+    31.810689
+  ],
+  "常熟": [
+    120.757951,
+    31.649566
+  ],
+  "建邺区": [
+    118.731694,
+    32.003552
+  ],
+  "开发区": [
+    105.204857,
+    37.514206
+  ],
+  "徐州": [
+    117.284124,
+    34.205768
+  ],
+  "徐州云龙区": [
+    117.25156,
+    34.253167
+  ],
+  "扬州市开发区": [
+    119.427323,
+    32.337737
+  ],
+  "新沂市": [
+    118.354537,
+    34.36958
+  ],
+  "昆山": [
+    120.974177,
+    31.341479
+  ],
+  "栖霞区": [
+    118.909246,
+    32.096228
+  ],
+  "江都区": [
+    119.569989,
+    32.434672
+  ],
+  "沛县": [
+    116.937532,
+    34.721656
+  ],
+  "沛县*": [
+    116.937532,
+    34.721656
+  ],
+  "泉山区": [
+    117.193805,
+    34.244258
+  ],
+  "泗阳县": [
+    118.703038,
+    33.72314
+  ],
+  "泰兴": [
+    119.92869,
+    32.13105
+  ],
+  "浦口区": [
+    118.627895,
+    32.059093
+  ],
+  "淮阴区": [
+    119.034725,
+    33.631893
+  ],
+  "玄武区": [
+    118.797861,
+    32.048687
+  ],
+  "盐都区": [
+    120.153898,
+    33.338094
+  ],
+  "睢宁县": [
+    117.941563,
+    33.912598
+  ],
+  "苏州高新区": [
+    120.433904,
+    31.329341
+  ],
+  "贾汪区": [
+    117.466687,
+    34.435506
+  ],
+  "贾汪区(全市)": [
+    117.466687,
+    34.435506
+  ],
+  "贾汪区(全市）": [
+    117.466687,
+    34.435506
+  ],
+  "连云区": [
+    119.338788,
+    34.760249
+  ],
+  "邗江区": [
+    119.398015,
+    32.377528
+  ],
+  "邳州市": [
+    118.012531,
+    34.338888
+  ],
+  "金湖县": [
+    119.020585,
+    33.025433
+  ],
+  "铜山区": [
+    117.169421,
+    34.1807
+  ],
+  "镇江市": [
+    119.425836,
+    32.187849
+  ],
+  "阜宁": [
+    119.8295,
+    33.776645
+  ],
+  "靖江": [
+    120.265519,
+    31.99775
+  ],
+  "高淳区": [
+    118.892085,
+    31.328471
+  ],
+  "鼓楼区": [
+    114.348307,
+    34.788561
+  ]
+};
+
+        var planePath = 'path://M.6,1318.313v-89.254l-319.9-221.799l0.073-208.063c0.521-84.662-26.629-121.796-63.961-121.491c-37.332-0.305-64.482,36.829-63.961,121.491l0.073,208.063l-319.9,221.799v89.254l330.343-157.288l12.238,241.308l-134.449,92.931l0.531,42.034l175.125-42.917l175.125,42.917l0.531-42.034l-134.449-92.931l12.238-241.308L1705';
+
+        var convertData = function (data) {
+            var res = [];
+            for (var i = 0; i < data.length; i++) {
+                var dataItem = data[i];
+                var fromCoord = geoCoordMap[dataItem[0].name];
+                var toCoord = geoCoordMap[dataItem[1].name];
+                if (fromCoord && toCoord) {
+                    res.push([{
+                        coord: fromCoord
+                    }, {
+                        coord: toCoord
+                    }]);
+                }
+            }
+            return res;
+        };
+
+        var color = ['#3ed4ff', '#ffa022', '#a6c84c','#d71345','#8552a1','#deab8a'];
+        var series=[];
+
+        var option = {
+            backgroundColor: '#080a20',
+            title: {
+                left: 'left',
+                textStyle: {
+                    color: '#fff'
+                }
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                top: 'bottom',
+                left: 'right',
+                data: [],
+                textStyle: {
+                    color: '#fff'
+                },
+                selectedMode: 'single'
+            },
+            geo: {
+                map: 'china',
+                zoom: 1.2,
+                label: {
+                    emphasis: {
+                        show: false
+                    }
+                },
+                roam: true,
+                itemStyle: {
+                    normal: {
+                        areaColor: '#142957',
+                        borderColor: '#0692a4'
+                    },
+                    emphasis: {
+                        areaColor: '#0b1c2d'
+                    }
+                }
+            },
+            series: series
+        };
+
+
+    function fetchData() {
+
+            $.post(
+            "/getinsectlocation",
+            function(data){
+
+                [[data.name[0], data.one], [data.name[1], data.two], [data.name[2], data.three],[data.name[3], data.four],[data.name[4], data.five],[data.name[5], data.six]].forEach(function (item, i) {
+                    //myecharts.hideLoading();
+            series.push({
+                name: item[0],
+                type: 'lines',
+                zlevel: 1,
+                effect: {
+                    show: true,
+                    period: 6,
+                    trailLength: 0.7,
+                    color: '#fff',
+                    symbolSize: 3
+                },
+                lineStyle: {
+                    normal: {
+                        color: color[i],
+                        width: 0,
+                        curveness: 0.2
+                    }
+                },
+                data: convertData(item[1])
+            }, {
+                name: item[0],
+                type: 'lines',
+                zlevel: 2,
+                effect: {
+                    show: true,
+                    period: 6,
+                    trailLength: 0,
+                    symbol: planePath,
+                    symbolSize: 15
+                },
+                lineStyle: {
+                    normal: {
+                        color: color[i],
+                        width: 1,
+                        opacity: 0.4,
+                        curveness: 0.2
+                    }
+                },
+                data: convertData(item[1])
+            }, {
+                name: item[0],
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                zlevel: 2,
+                rippleEffect: {
+                    brushType: 'stroke'
+                },
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'right',
+                        formatter: '{b}'
+                    }
+                },
+                symbolSize: function (val) {
+                    return val[2] / 8;
+                },
+                itemStyle: {
+                    normal: {
+                        color: color[i]
+                    }
+                },
+                data: item[1].map(function (dataItem) {
+                    return {
+                        name: dataItem[1].name,
+                        value: geoCoordMap[dataItem[1].name].concat([dataItem[1].value])
+                    };
+                })
+            });
+        });
+            option.series = series;
+
+            // 使用指定的配置项和数据显示图表
+            myecharts.setOption(option);
+
+            },
+            "json"
+        );
+
+    }
+
+
+    (function () {
+
+        myecharts = echarts.init($('.map .geo')[0]);
+        myecharts.setOption(option);
+        //myecharts.showLoading();
+        fetchData();
+
+    })();
+
+
+
+</script>
+</body>
+
+<script src="/static/js/index.js"></script>
+<script src="/static/js/province.js"></script>
+<script src="/static/js/china.js"></script>
+{#<script src="/static/js/mymap.js"></script>#}
+
+</html>

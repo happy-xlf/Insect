@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>地图展示</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta name="referrer" content="no-referrer">
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/echarts.min.js"></script>
+    <script type="text/javascript" src="/static/js/china.js" ></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/world.js?_v_=1598903772045"></script>
+    <meta name="referrer" content="no-referrer">
+    <style>
+    body,
+    html,
+    #container {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        font-family: "微软雅黑";
+    }
+    </style>
+ <script type="text/javascript" src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=XMvUnX4k9m62hGvcvzBkCkwN8WeOrhs4"></script>
+
+</head>
+<body>
+    <div id="container"></div>
+</body>
+</html>
+<script>
+
+
+$(function () {
+
+    var map = new BMapGL.Map('container');
+    map.enableScrollWheelZoom();   //启用滚轮放大缩小，默认禁用
+    map.enableContinuousZoom();    //启用地图惯性拖拽，默认禁用
+    map.centerAndZoom("北京", 5); // 初始化地图，设置中心点坐标和地图级别
+
+    $.ajax({
+            url: '/show_insect',
+            type: "POST",
+            dataType: "JSON",
+            async: false,
+            cache: false,
+            success:function (citys) {
+            var cityGeo = new BMapGL.Geocoder();
+            for (let i = 0; i < citys.length; i++) {
+                cityGeo.getPoint(citys[i].name, function (point) { // 地址解析获取对应经纬度
+                    var pt = new BMapGL.Point(point.lng, point.lat);
+
+                    console.log("name",citys[i].name+"lng:"+point.lng+" lat:"+point.lat);
+                    // 创建点标记
+                    var marker = new BMapGL.Marker(pt);
+                    map.addOverlay(marker);
+                   var infoWindow = new BMapGL.InfoWindow(
+                       "<p><a><img style='width: 250px;height: 200px'  src='"+citys[i].pic+"' /></a></p>" +
+                       "<p style='font-size:15px;'>昆虫名称:"+citys[i].name+"</p>"+
+                   "<p style='font-size:15px;'>所在地区:"+citys[i].area+"</p>"); // 创建信息窗口对象
+                    // 点标记添加点击事件
+                    marker.addEventListener('click', function () {
+                        map.openInfoWindow(infoWindow, point); // 开启信息窗口
+                    });
+                });
+            }
+
+
+            },
+            error:function(){
+                alert("出现错误");
+            }
+        });
+
+
+
+
+
+});
+
+
+
+</script>
